@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html class="dark scroll-smooth" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Eidetix | AI Workforce that understands your company</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#e1e2e5",
+                        "surface-container-low": "#191c1e",
+                        "on-surface-variant": "#b9cacb",
+                        "secondary-container": "#454749",
+                        "background": "#111416",
+                        "tertiary-fixed-dim": "#adc7ff",
+                        "error": "#ffb4ab",
+                        "primary-fixed": "#7df4ff",
+                        "on-tertiary-container": "#005bc0",
+                        "surface-container-highest": "#323537",
+                        "primary": "#dbfcff",
+                        "on-secondary-fixed": "#1a1c1e",
+                        "on-error": "#690005",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#454749",
+                        "inverse-surface": "#e1e2e5",
+                        "tertiary-fixed": "#d8e2ff",
+                        "surface-bright": "#37393c",
+                        "inverse-on-surface": "#2e3133",
+                        "surface-container": "#1d2022",
+                        "inverse-primary": "#006970",
+                        "primary-container": "#00f0ff",
+                        "tertiary-container": "#cad9ff",
+                        "surface-dim": "#111416",
+                        "secondary": "#c6c6c9",
+                        "surface-container-lowest": "#0c0f11",
+                        "surface-container-high": "#272a2c",
+                        "surface-variant": "#323537",
+                        "on-background": "#e1e2e5",
+                        "on-tertiary-fixed-variant": "#004493",
+                        "on-secondary": "#2f3133",
+                        "on-tertiary": "#002e68",
+                        "surface": "#111416",
+                        "on-primary": "#00363a",
+                        "on-primary-fixed-variant": "#004f54",
+                        "tertiary": "#f4f5ff",
+                        "surface-tint": "#00dbe9",
+                        "outline-variant": "#3b494b",
+                        "on-primary-container": "#006970",
+                        "primary-fixed-dim": "#00dbe9",
+                        "on-secondary-container": "#b4b5b7",
+                        "error-container": "#93000a",
+                        "secondary-fixed": "#e2e2e5",
+                        "outline": "#849495",
+                        "on-tertiary-fixed": "#001a41",
+                        "secondary-fixed-dim": "#c6c6c9",
+                        "on-primary-fixed": "#002022"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"],
+                        "mono": ["JetBrains Mono"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .memory-gradient {
+            background: linear-gradient(135deg, #00dbe9 0%, #00f0ff 100%);
+        }
+
+        .glass-panel {
+            background: rgba(50, 53, 55, 0.4);
+            backdrop-filter: blur(12px);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.75s ease-out, transform 0.75s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-4px);
+        }
+
+        .hover-glow:hover {
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+        }
+
+        .integration-icon {
+            width: 32px;
+            height: 32px;
+            display: block;
+            filter: brightness(0) invert(0.7);
+            transition: filter 0.2s ease;
+        }
+
+        .integration-icon:hover {
+            filter: brightness(0) invert(1);
+        }
+
+        /* ── Architecture diagram animations ── */
+        .arch-node {
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+
+        .arch-node.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .arch-line {
+            stroke-dasharray: 600;
+            stroke-dashoffset: 600;
+            transition: stroke-dashoffset 0.7s ease-out;
+        }
+
+        .arch-line.visible {
+            stroke-dashoffset: 0;
+        }
+
+        .context-bar {
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .context-bar.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* ── Moatbook chat animations ── */
+        .chat-row {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+
+        .chat-row.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── Blinking cursor ── */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .blink-cursor {
+            animation: blink 1s step-end infinite;
+        }
+
+        /* ── Intro animation ── */
+        @keyframes intro-logo {
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .intro-overlay {
+            position: fixed;
+            inset: 0;
+            background: #111416;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fade-out 0.5s ease-in 1.5s forwards;
+        }
+
+        @keyframes fade-out {
+            from { opacity: 1; }
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        .logo-anim {
+            width: 300px;
+            animation: intro-logo 1.2s ease-out forwards;
+        }
+
+        /* ── Vignette text ── */
+        .vignette-line1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .vignette-line2 {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: #849495;
+            margin-top: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-surface font-body selection:bg-primary-container/30">
+
+    <!-- Intro Animation -->
+    <div class="intro-overlay" id="intro-overlay">
+        <div class="logo-anim">
+            <img src="assets/logo light.svg" alt="Eidetix" class="w-48 mx-auto">
+        </div>
+    </div>
+
+    <!-- ── Nav ── -->
+    <nav class="w-full top-0 sticky z-50 bg-[#111416]/90 backdrop-blur-md border-b border-outline-variant/10">
+        <div class="flex justify-between items-center px-4 sm:px-6 md:px-8 py-3 md:py-4 max-w-[1440px] mx-auto">
+            <div class="flex items-center gap-3">
+                <img src="assets/logo light.svg" alt="Eidetix" class="h-6 w-auto">
+                <span class="font-headline font-semibold text-sm text-on-surface-variant/60 tracking-widest uppercase">AI Workforce</span>
+            </div>
+            <div class="hidden md:flex items-center gap-8 font-headline text-sm text-on-surface-variant/70">
+                <a href="#workforce" class="hover:text-primary-container transition-colors">Workforce</a>
+                <a href="#architecture" class="hover:text-primary-container transition-colors">Architecture</a>
+                <a href="#moatbook" class="hover:text-primary-container transition-colors">Moatbook</a>
+            </div>
+            <a href="#early-access">
+                <button class="bg-[#00f0ff] text-[#00363a] font-headline font-bold px-4 sm:px-6 py-2 rounded-md hover:bg-[#1d2022] hover:text-[#00f0ff] active:scale-90 transition-all duration-300 hover-glow">
+                    Request Early Access
+                </button>
+            </a>
+        </div>
+    </nav>
+
+    <!-- ── SECTION 1: HERO ── -->
+    <header class="relative overflow-hidden pt-20 sm:pt-28 md:pt-36 pb-20 sm:pb-28 md:pb-36 px-4 sm:px-6 md:px-8">
+        <div class="max-w-[1440px] mx-auto relative z-10">
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="font-headline text-4xl sm:text-6xl md:text-7xl font-bold tracking-tighter leading-[1.08] mb-6 sm:mb-8">
+                    AI Workforce that<br/>
+                    <span class="text-primary-container">understands your company</span>
+                </h1>
+                <p class="text-base sm:text-lg md:text-xl text-on-surface-variant max-w-3xl mx-auto font-light leading-relaxed mb-10 sm:mb-12">
+                    Eidetix deploys a team of specialized AI agents that know your decisions, your constraints, and your history — not just your codebase. They work. They debate. They remember.
+                </p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="#early-access">
+                        <button class="memory-gradient text-on-primary font-headline font-bold px-8 sm:px-10 py-4 sm:py-5 rounded-md hover:shadow-[0_0_20px_rgba(0,240,255,0.4)] transition-all active:scale-95 text-base sm:text-lg">
+                            Request Early Access
+                        </button>
+                    </a>
+                    <a href="#moatbook">
+                        <button class="px-8 sm:px-10 py-4 sm:py-5 rounded-md border border-outline-variant/50 text-primary hover:bg-surface-container-high transition-all font-headline font-medium text-base sm:text-lg">
+                            Watch the Demo
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- Ambient glow -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-20 pointer-events-none">
+            <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-primary-container/25 rounded-full blur-[160px]"></div>
+        </div>
+    </header>
+
+    <!-- ── SECTION 1.5: VIDEO DEMO ── -->
+    <section id="video-demo" class="py-16 sm:py-20 md:py-24 reveal" style="overflow: visible;">
+        <div class="text-center mb-10 sm:mb-12 px-4">
+            <label class="text-xs font-mono text-primary uppercase tracking-[0.3em] mb-4 block">Demo</label>
+            <h2 class="font-headline text-3xl sm:text-4xl md:text-5xl font-bold text-on-surface tracking-tight">See how it works</h2>
+        </div>
+        <!-- Full-bleed video wrapper -->
+        <div class="relative">
+            <!-- Blurred edge overlays — left & right -->
+            <div class="absolute inset-y-0 left-0 w-16 sm:w-24 md:w-40 z-10 pointer-events-none"
+                 style="background: linear-gradient(to right, #111416 0%, transparent 100%);"></div>
+            <div class="absolute inset-y-0 right-0 w-16 sm:w-24 md:w-40 z-10 pointer-events-none"
+                 style="background: linear-gradient(to left, #111416 0%, transparent 100%);"></div>
+            <!-- Blurred edge overlays — top & bottom -->
+            <div class="absolute inset-x-0 top-0 h-10 sm:h-14 z-10 pointer-events-none"
+                 style="background: linear-gradient(to bottom, #111416 0%, transparent 100%);"></div>
+            <div class="absolute inset-x-0 bottom-0 h-10 sm:h-14 z-10 pointer-events-none"
+                 style="background: linear-gradient(to top, #111416 0%, transparent 100%);"></div>
+            <!-- Ambient cyan glow -->
+            <div class="absolute inset-0 pointer-events-none"
+                 style="background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0,219,233,0.12) 0%, transparent 70%);"></div>
+            <!-- Video card -->
+            <div class="mx-8 sm:mx-16 md:mx-24 lg:mx-40 xl:mx-56 relative rounded-xl overflow-hidden border border-outline-variant/20 shadow-2xl hover-glow">
+                <!-- Top bar chrome -->
+                <div class="relative flex items-center gap-2 px-4 py-3 bg-surface-container border-b border-outline-variant/20">
+                    <span class="w-3 h-3 rounded-full bg-error/70"></span>
+                    <span class="w-3 h-3 rounded-full bg-primary-fixed-dim/50"></span>
+                    <span class="w-3 h-3 rounded-full bg-primary-container/50"></span>
+                    <span class="ml-3 text-xs font-mono text-on-surface-variant/50 select-none">eidetix — ai workforce in action</span>
+                </div>
+                <!-- Video -->
+                <video id="demo-video"
+                       class="w-full block"
+                       src="assets/AIWorkforceDemo.mp4"
+                       muted
+                       playsinline
+                       loop
+                       preload="metadata">
+                </video>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECTION 2: THE PROBLEM ── -->
+    <section class="py-20 sm:py-28 md:py-36 px-4 sm:px-6 md:px-8 bg-surface-container-low reveal">
+        <div class="max-w-[1440px] mx-auto">
+            <label class="block text-xs font-mono text-on-surface-variant/40 uppercase tracking-[0.35em] mb-20 sm:mb-28 text-center">THE COST OF INSTITUTIONAL AMNESIA</label>
+
+            <!-- Vignette 1 -->
+            <div class="border-t border-outline-variant/20 py-14 sm:py-20 reveal">
+                <div class="max-w-3xl">
+                    <p class="vignette-line1 text-on-surface">"Rohit left in 2022."</p>
+                    <p class="vignette-line2">The context went with him.</p>
+                </div>
+            </div>
+
+            <!-- Vignette 2 -->
+            <div class="border-t border-outline-variant/20 py-14 sm:py-20 reveal">
+                <div class="max-w-3xl mx-auto">
+                    <p class="vignette-line1 text-on-surface">"Your agent is smart."</p>
+                    <p class="vignette-line2">It just doesn't know why you dropped Kafka.</p>
+                </div>
+            </div>
+
+            <!-- Vignette 3 -->
+            <div class="border-t border-b border-outline-variant/20 py-14 sm:py-20 reveal">
+                <div class="max-w-3xl ml-auto text-right">
+                    <p class="vignette-line1 text-on-surface">"That 2am Cursor session."</p>
+                    <p class="vignette-line2">Gone by morning.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECTION 3: THE WORKFORCE ── -->
+    <section class="py-20 sm:py-28 md:py-36 px-4 sm:px-6 md:px-8 reveal" id="workforce">
+        <div class="max-w-[1440px] mx-auto">
+            <div class="max-w-2xl mb-14 sm:mb-20">
+                <h2 class="font-headline text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter mb-5">Not one agent. A team.</h2>
+                <p class="text-on-surface-variant text-base sm:text-lg leading-relaxed font-light">
+                    Each agent brings domain expertise. They collaborate, challenge each other, and route work — while every output feeds back into shared context. The workforce gets sharper with every session.
+                </p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                <!-- Card 1 -->
+                <div class="bg-surface-container-lowest p-6 sm:p-8 rounded-xl border border-outline-variant/20 hover-lift hover-glow transition-all">
+                    <i data-lucide="shield" class="w-5 h-5 text-primary-container mb-6"></i>
+                    <h3 class="font-headline font-bold text-lg mb-3 text-on-surface">Security</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed">Monitors vulnerabilities, enforces compliance, and flags risks across every change</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-surface-container-lowest p-6 sm:p-8 rounded-xl border border-outline-variant/20 hover-lift hover-glow transition-all">
+                    <i data-lucide="server" class="w-5 h-5 text-primary-container mb-6"></i>
+                    <h3 class="font-headline font-bold text-lg mb-3 text-on-surface">Infrastructure</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed">Manages deployments, reliability, and scaling with full knowledge of past incidents</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-surface-container-lowest p-6 sm:p-8 rounded-xl border border-outline-variant/20 hover-lift hover-glow transition-all">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5 text-primary-container mb-6"></i>
+                    <h3 class="font-headline font-bold text-lg mb-3 text-on-surface">Product</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed">Translates product goals into executable tasks aligned with technical constraints</p>
+                </div>
+                <!-- Card 4 -->
+                <div class="bg-surface-container-lowest p-6 sm:p-8 rounded-xl border border-outline-variant/20 hover-lift hover-glow transition-all">
+                    <i data-lucide="trending-down" class="w-5 h-5 text-primary-container mb-6"></i>
+                    <h3 class="font-headline font-bold text-lg mb-3 text-on-surface">Cost</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed">Tracks spend, surfaces inefficiencies, and optimises resource usage across the stack</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECTION 4: ARCHITECTURE ── -->
+    <section class="py-20 sm:py-28 md:py-36 px-4 sm:px-6 md:px-8 bg-surface-container-low reveal" id="architecture">
+        <div class="max-w-[1440px] mx-auto">
+            <div class="max-w-2xl mb-14 sm:mb-20">
+                <h2 class="font-headline text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter mb-5">One Director. Many experts. Zero knowledge gaps.</h2>
+                <p class="text-on-surface-variant text-base sm:text-lg leading-relaxed font-light">
+                    The Director Agent is your team's single point of contact. It understands the ask, delegates to the right specialists, creates Jira tickets, and reports back. Every agent — and every decision — connects to the same context.
+                </p>
+            </div>
+
+            <!-- SVG Architecture Diagram -->
+            <div class="max-w-3xl mx-auto" id="arch-diagram">
+                <div class="bg-surface-container p-8 sm:p-12 rounded-xl border border-outline-variant/20">
+                    <svg id="arch-svg" viewBox="0 0 600 480" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg" font-family="Space Grotesk, sans-serif">
+
+                        <!-- ── Connector lines (draw on scroll) ── -->
+                        <!-- Human → Director (vertical) -->
+                        <line class="arch-line" id="line-h-d" x1="300" y1="72" x2="300" y2="128" stroke="#3b494b" stroke-width="1.5" fill="none"/>
+                        <!-- Arrow label: natural language -->
+                        <text id="lbl-nl" x="310" y="108" fill="#849495" font-size="10" font-family="JetBrains Mono" opacity="0">natural language</text>
+
+                        <!-- Director → Jira (horizontal branch) -->
+                        <line class="arch-line" id="line-d-j1" x1="390" y1="168" x2="448" y2="168" stroke="#3b494b" stroke-width="1.5" fill="none"/>
+                        <line class="arch-line" id="line-d-j2" x1="440" y1="148" x2="440" y2="168" stroke="#3b494b" stroke-width="1.5" fill="none"/>
+
+                        <!-- Director → Bottom agents (vertical, then split) -->
+                        <line class="arch-line" id="line-d-b" x1="300" y1="208" x2="300" y2="268" stroke="#3b494b" stroke-width="1.5" fill="none"/>
+                        <!-- horizontal spread -->
+                        <line class="arch-line" id="line-spread" x1="80" y1="268" x2="520" y2="268" stroke="#3b494b" stroke-width="1.5" fill="none"/>
+                        <!-- drops to each agent -->
+                        <line class="arch-line" id="line-a1" x1="80"  y1="268" x2="80"  y2="302" stroke="#3b494b" stroke-width="1.5" fill="none"/>
+                        <line class="arch-line" id="line-a2" x1="220" y1="268" x2="220" y2="302" stroke="#3b494b" stroke-width="1.5" fill="none"/>
+                        <line class="arch-line" id="line-a3" x1="360" y1="268" x2="360" y2="302" stroke="#3b494b" stroke-width="1.5" fill="none"/>
+                        <line class="arch-line" id="line-a4" x1="520" y1="268" x2="520" y2="302" stroke="#3b494b" stroke-width="1.5" fill="none"/>
+                        <!-- delegates label -->
+                        <text id="lbl-del" x="310" y="254" fill="#849495" font-size="10" font-family="JetBrains Mono" opacity="0">delegates to</text>
+
+                        <!-- Agent nodes → context bar (vertical drops) -->
+                        <line class="arch-line" id="line-c1" x1="80"  y1="352" x2="80"  y2="388" stroke="#3b494b" stroke-width="1" fill="none"/>
+                        <line class="arch-line" id="line-c2" x1="220" y1="352" x2="220" y2="388" stroke="#3b494b" stroke-width="1" fill="none"/>
+                        <line class="arch-line" id="line-c3" x1="300" y1="212" x2="300" y2="388" stroke="#3b494b" stroke-width="0.5" stroke-dasharray="4 4" fill="none"/>
+                        <line class="arch-line" id="line-c4" x1="360" y1="352" x2="360" y2="388" stroke="#3b494b" stroke-width="1" fill="none"/>
+                        <line class="arch-line" id="line-c5" x1="520" y1="352" x2="520" y2="388" stroke="#3b494b" stroke-width="1" fill="none"/>
+
+                        <!-- ── HUMAN node ── -->
+                        <g class="arch-node" id="node-human">
+                            <rect x="236" y="28" width="128" height="44" rx="6" fill="#1d2022" stroke="#3b494b" stroke-width="1.5"/>
+                            <text x="300" y="55" fill="#e1e2e5" font-size="13" text-anchor="middle" font-weight="500">Human</text>
+                        </g>
+
+                        <!-- ── DIRECTOR node (teal accent) ── -->
+                        <g class="arch-node" id="node-director">
+                            <rect x="200" y="128" width="200" height="80" rx="8" fill="#0c1a1b" stroke="#00dbe9" stroke-width="2"/>
+                            <text x="300" y="162" fill="#00f0ff" font-size="14" text-anchor="middle" font-weight="600">Director Agent</text>
+                            <text x="300" y="182" fill="#849495" font-size="10" text-anchor="middle" font-family="JetBrains Mono">orchestrates · delegates</text>
+                        </g>
+
+                        <!-- ── JIRA node ── -->
+                        <g class="arch-node" id="node-jira">
+                            <text id="lbl-ja" x="503" y="140" fill="#849495" font-size="9" font-family="JetBrains Mono" text-anchor="middle" opacity="0">creates &amp; assigns</text>
+                            <rect x="448" y="148" width="110" height="40" rx="5" fill="#1d2022" stroke="#3b494b" stroke-width="1.2"/>
+                            <text x="503" y="173" fill="#b9cacb" font-size="11" text-anchor="middle">Jira / Tickets</text>
+                        </g>
+
+                        <!-- ── Bottom agent nodes ── -->
+                        <g class="arch-node" id="node-sec">
+                            <rect x="28" y="302" width="104" height="50" rx="6" fill="#1d2022" stroke="#3b494b" stroke-width="1.2"/>
+                            <text x="80" y="332" fill="#e1e2e5" font-size="12" text-anchor="middle" font-weight="500">Security</text>
+                        </g>
+                        <g class="arch-node" id="node-infra">
+                            <rect x="168" y="302" width="104" height="50" rx="6" fill="#1d2022" stroke="#3b494b" stroke-width="1.2"/>
+                            <text x="220" y="332" fill="#e1e2e5" font-size="12" text-anchor="middle" font-weight="500">Infra</text>
+                        </g>
+                        <g class="arch-node" id="node-product">
+                            <rect x="308" y="302" width="104" height="50" rx="6" fill="#1d2022" stroke="#3b494b" stroke-width="1.2"/>
+                            <text x="360" y="332" fill="#e1e2e5" font-size="12" text-anchor="middle" font-weight="500">Product</text>
+                        </g>
+                        <g class="arch-node" id="node-cost">
+                            <rect x="468" y="302" width="104" height="50" rx="6" fill="#1d2022" stroke="#3b494b" stroke-width="1.2"/>
+                            <text x="520" y="332" fill="#e1e2e5" font-size="12" text-anchor="middle" font-weight="500">Cost</text>
+                        </g>
+
+                        <!-- ── CONTEXT LAYER bar ── -->
+                        <g class="context-bar" id="context-bar-group">
+                            <rect x="20" y="388" width="560" height="52" rx="4" fill="#191c1e" stroke="#3b494b" stroke-width="1"/>
+                            <text x="300" y="419" fill="#849495" font-size="11" text-anchor="middle" font-family="JetBrains Mono" letter-spacing="3">CONTEXT LAYER</text>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECTION 5: MOATBOOK ── -->
+    <section class="py-20 sm:py-28 md:py-36 px-4 sm:px-6 md:px-8 reveal" id="moatbook">
+        <div class="max-w-[1440px] mx-auto">
+            <div class="max-w-2xl mb-14 sm:mb-20">
+                <label class="block text-xs font-mono text-on-surface-variant/40 uppercase tracking-[0.35em] mb-5">Global-Agent-Space</label>
+                <h2 class="font-headline text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter mb-5">Agents don't just execute. They debate.</h2>
+                <p class="text-on-surface-variant text-base sm:text-lg leading-relaxed font-light">
+                    Before any significant output, agents challenge each other's reasoning. The Director hears every argument and makes the final call. Every deliberation is logged, traceable, and feeds back into context.
+                </p>
+            </div>
+
+            <!-- Deliberation thread -->
+            <div class="max-w-3xl" id="chat-container">
+                <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/20 overflow-hidden">
+                    <!-- Header -->
+                    <div class="px-5 py-3 border-b border-outline-variant/15 flex items-center gap-3">
+                        <span class="font-mono text-xs text-on-surface-variant/50">Global-Agent-Space</span>
+                        <span class="text-outline/40">·</span>
+                        <span class="font-mono text-xs text-on-surface-variant/40">Task: Migrate auth service to JWT</span>
+                    </div>
+
+                    <!-- Chat rows -->
+                    <div class="divide-y divide-outline-variant/10">
+
+                        <div class="chat-row px-5 py-4 flex gap-4">
+                            <span class="font-mono text-xs text-primary-container/80 w-20 shrink-0 pt-0.5">Architect</span>
+                            <p class="text-sm text-on-surface font-body leading-relaxed">"Use asymmetric RS256. Rotate keys quarterly."</p>
+                        </div>
+
+                        <div class="chat-row px-5 py-4 flex gap-4">
+                            <span class="font-mono text-xs text-tertiary-fixed-dim/80 w-20 shrink-0 pt-0.5">Security</span>
+                            <p class="text-sm text-on-surface font-body leading-relaxed">"RS256 is right. But quarterly rotation is too slow — we had a credential leak in March. Monthly minimum."</p>
+                        </div>
+
+                        <div class="chat-row px-5 py-4 flex gap-4">
+                            <span class="font-mono text-xs text-primary-container/80 w-20 shrink-0 pt-0.5">Architect</span>
+                            <p class="text-sm text-on-surface font-body leading-relaxed">"Monthly adds ops burden. Automate rotation via KMS."</p>
+                        </div>
+
+                        <div class="chat-row px-5 py-4 flex gap-4">
+                            <span class="font-mono text-xs text-tertiary-fixed-dim/80 w-20 shrink-0 pt-0.5">Security</span>
+                            <p class="text-sm text-on-surface font-body leading-relaxed">"Agreed. KMS + monthly works."</p>
+                        </div>
+
+                        <!-- Director row: teal left accent -->
+                        <div class="chat-row relative flex gap-4 px-5 py-4" style="border-left: 2px solid #00dbe9;">
+                            <span class="font-mono text-xs text-[#00dbe9] w-20 shrink-0 pt-0.5">Director</span>
+                            <p class="text-sm text-on-surface font-body leading-relaxed">
+                                "Approved: RS256 + KMS-managed monthly rotation. Jira ENG-2847 created."
+                                <span class="blink-cursor inline-block w-0.5 h-4 bg-primary-container ml-1 align-middle"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats row -->
+                <div class="mt-8 flex items-center gap-6 text-sm text-on-surface-variant/50 font-mono">
+                    <span>4 agents</span>
+                    <span class="text-outline/40">·</span>
+                    <span>2 rounds</span>
+                    <span class="text-outline/40">·</span>
+                    <span>1 decision</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECTION 6: HOW IT'S DIFFERENT ── -->
+    <section class="py-20 sm:py-28 md:py-36 px-4 sm:px-6 md:px-8 bg-surface-container-low reveal">
+        <div class="max-w-[1440px] mx-auto">
+            <h2 class="font-headline text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter mb-14 sm:mb-20 max-w-2xl">The difference isn't capability. It's memory.</h2>
+
+            <div class="grid md:grid-cols-2 gap-10 sm:gap-16 max-w-4xl">
+                <!-- Left -->
+                <div>
+                    <p class="font-headline font-semibold text-on-surface-variant/50 mb-6 uppercase tracking-widest text-xs">Other AI tools</p>
+                    <ul class="space-y-5">
+                        <li class="flex gap-3 items-start text-on-surface-variant/60">
+                            <span class="mt-1 w-1 h-1 rounded-full bg-outline/50 shrink-0"></span>
+                            <span>Reads your code</span>
+                        </li>
+                        <li class="flex gap-3 items-start text-on-surface-variant/60">
+                            <span class="mt-1 w-1 h-1 rounded-full bg-outline/50 shrink-0"></span>
+                            <span>Forgets context between sessions</span>
+                        </li>
+                        <li class="flex gap-3 items-start text-on-surface-variant/60">
+                            <span class="mt-1 w-1 h-1 rounded-full bg-outline/50 shrink-0"></span>
+                            <span>Starts from zero every time</span>
+                        </li>
+                        <li class="flex gap-3 items-start text-on-surface-variant/60">
+                            <span class="mt-1 w-1 h-1 rounded-full bg-outline/50 shrink-0"></span>
+                            <span>One agent, one task</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Right -->
+                <div>
+                    <p class="font-headline font-semibold text-primary-container mb-6 uppercase tracking-widest text-xs">Eidetix</p>
+                    <ul class="space-y-5">
+                        <li class="flex gap-3 items-start text-on-surface">
+                            <span class="mt-1 w-1 h-1 rounded-full bg-primary-container shrink-0"></span>
+                            <span>Knows your decisions</span>
+                        </li>
+                        <li class="flex gap-3 items-start text-on-surface">
+                            <span class="mt-1 w-1 h-1 rounded-full bg-primary-container shrink-0"></span>
+                            <span>Remembers what was tried and why it failed</span>
+                        </li>
+                        <li class="flex gap-3 items-start text-on-surface">
+                            <span class="mt-1 w-1 h-1 rounded-full bg-primary-container shrink-0"></span>
+                            <span>Gets smarter with every session</span>
+                        </li>
+                        <li class="flex gap-3 items-start text-on-surface">
+                            <span class="mt-1 w-1 h-1 rounded-full bg-primary-container shrink-0"></span>
+                            <span>A coordinated team with a Director</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECTION 7: INTEGRATIONS ── -->
+    <section class="py-16 sm:py-20 px-4 sm:px-6 md:px-8 border-y border-outline-variant/10 reveal">
+        <div class="max-w-[1440px] mx-auto text-center">
+            <p class="text-on-surface-variant/60 text-sm font-mono uppercase tracking-[0.25em] mb-10">Works where your team already works.</p>
+            <div class="flex flex-wrap justify-center items-center gap-10 sm:gap-14 md:gap-20">
+                <!-- Cursor -->
+                <div class="flex flex-col items-center gap-3 group">
+                    <img src="https://cdn.jsdelivr.net/npm/simple-icons/icons/cursor.svg" alt="Cursor" class="integration-icon" loading="lazy" />
+                    <span class="text-xs text-on-surface-variant/50 group-hover:text-on-surface-variant transition-colors font-mono">Cursor</span>
+                </div>
+                <!-- Slack -->
+                <div class="flex flex-col items-center gap-3 group">
+                    <svg class="integration-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="currentColor" d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/>
+                    </svg>
+                    <span class="text-xs text-on-surface-variant/50 group-hover:text-on-surface-variant transition-colors font-mono">Slack</span>
+                </div>
+                <!-- GitHub -->
+                <div class="flex flex-col items-center gap-3 group">
+                    <svg class="integration-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                    </svg>
+                    <span class="text-xs text-on-surface-variant/50 group-hover:text-on-surface-variant transition-colors font-mono">GitHub</span>
+                </div>
+                <!-- Confluence -->
+                <div class="flex flex-col items-center gap-3 group">
+                    <svg class="integration-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="currentColor" d="M.87 18.257c-.248.382-.53.875-.763 1.245a.764.764 0 0 0 .255 1.04l4.965 3.054a.764.764 0 0 0 1.058-.26c.199-.332.454-.763.733-1.221 1.967-3.247 3.945-2.853 7.508-1.146l4.957 2.379a.764.764 0 0 0 1.028-.382l2.36-5.2a.765.765 0 0 0-.378-1.008c-1.462-.701-4.476-2.15-6.557-3.166-5.642-2.703-10.283-2.3-15.166 4.665zM23.131 5.743c.249-.405.531-.875.764-1.25a.764.764 0 0 0-.256-1.034L18.675.404a.764.764 0 0 0-1.058.26c-.195.335-.451.763-.734 1.225-1.966 3.246-3.945 2.85-7.508 1.146L4.437.67A.764.764 0 0 0 3.41 1.05L1.047 6.24a.764.764 0 0 0 .378 1.008c1.462.7 4.478 2.15 6.558 3.166 5.642 2.7 10.282 2.3 15.148-4.671z"/>
+                    </svg>
+                    <span class="text-xs text-on-surface-variant/50 group-hover:text-on-surface-variant transition-colors font-mono">Confluence</span>
+                </div>
+                <!-- Jira -->
+                <div class="flex flex-col items-center gap-3 group">
+                    <svg class="integration-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="currentColor" d="M11.571 11.513H0a5.218 5.218 0 0 0 5.232 5.215h2.13v2.057A5.215 5.215 0 0 0 12.575 24V12.518a1.005 1.005 0 0 0-1.005-1.005zm5.723-5.756H5.736a5.215 5.215 0 0 0 5.215 5.214h2.129v2.058a5.218 5.218 0 0 0 5.215 5.214V6.758a1.001 1.001 0 0 0-1.001-1.001zM23.013 0H11.455a5.215 5.215 0 0 0 5.215 5.215h2.129v2.057A5.215 5.215 0 0 0 24 12.483V1.005A1.005 1.005 0 0 0 23.013 0z"/>
+                    </svg>
+                    <span class="text-xs text-on-surface-variant/50 group-hover:text-on-surface-variant transition-colors font-mono">Jira</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECTION 8: FINAL CTA ── -->
+    <section class="py-28 sm:py-36 md:py-48 px-4 sm:px-6 md:px-8 bg-surface-container-lowest reveal" id="early-access">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="font-headline text-3xl sm:text-5xl md:text-6xl font-bold tracking-tighter mb-10">
+                Build the workforce that remembers.
+            </h2>
+            <a href="https://forms.gle/5ZfyVxJ4QWAMQVjs6" target="_blank" rel="noopener noreferrer">
+                <button class="memory-gradient text-on-primary font-headline font-bold px-10 sm:px-14 py-5 sm:py-6 rounded-md text-lg sm:text-xl hover:scale-105 transition-all hover-glow shadow-2xl">
+                    Request Early Access
+                </button>
+            </a>
+            <p class="mt-5 text-xs font-mono text-on-surface-variant/40 tracking-wider">Currently onboarding engineering teams in closed beta.</p>
+        </div>
+    </section>
+
+    <!-- ── SECTION 9: FOOTER ── -->
+    <footer class="w-full border-t border-outline-variant/20 bg-background">
+        <div class="flex flex-col md:flex-row justify-between items-center px-4 sm:px-6 md:px-8 py-10 md:py-12 max-w-[1440px] mx-auto gap-6">
+            <div class="flex items-center gap-3">
+                <img src="assets/logo light.svg" alt="Eidetix" class="h-7 w-auto">
+                <p class="text-[10px] font-mono text-on-surface-variant/40 tracking-[0.18em] uppercase">AI Workforce</p>
+            </div>
+            <div class="flex items-center gap-6 sm:gap-8 text-sm text-on-surface-variant/50">
+                <a href="#workforce" class="hover:text-primary-container transition-colors">Product</a>
+                <a href="#moatbook" class="hover:text-primary-container transition-colors">Moatbook</a>
+                <a href="#" class="hover:text-primary-container transition-colors">Docs</a>
+                <a href="#early-access" class="hover:text-primary-container transition-colors">Early Access</a>
+            </div>
+            <div class="text-sm text-on-surface-variant/30">
+                © 2026 Eidetix. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ── Init Lucide icons ──
+        lucide.createIcons();
+
+        // ── Generic scroll reveal ──
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.08 });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // ── Video auto-play / auto-pause on scroll ──
+        const demoVideo = document.getElementById('demo-video');
+        if (demoVideo) {
+            const videoObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        demoVideo.play().catch(() => {});
+                    } else {
+                        demoVideo.pause();
+                    }
+                });
+            }, { threshold: 0.3 });
+            videoObserver.observe(demoVideo);
+        }
+
+        // ── Intro hide ──
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const overlay = document.getElementById('intro-overlay');
+                if (overlay) overlay.style.display = 'none';
+            }, 1800);
+        });
+
+        // ── Architecture diagram: staggered node + line animations ──
+        const archDiagram = document.getElementById('arch-diagram');
+        if (archDiagram) {
+            const archObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+
+                    // Node order (top-to-bottom stagger, 100ms each)
+                    const nodeOrder = [
+                        'node-human',
+                        'node-director',
+                        'node-jira',
+                        'node-sec', 'node-infra', 'node-product', 'node-cost'
+                    ];
+                    nodeOrder.forEach((id, i) => {
+                        const el = document.getElementById(id);
+                        if (el) setTimeout(() => el.classList.add('visible'), i * 110);
+                    });
+
+                    // Lines draw in slightly after nodes
+                    const lineIds = [
+                        'line-h-d', 'line-d-j1', 'line-d-j2',
+                        'line-d-b', 'line-spread',
+                        'line-a1', 'line-a2', 'line-a3', 'line-a4',
+                        'line-c1', 'line-c2', 'line-c3', 'line-c4', 'line-c5'
+                    ];
+                    lineIds.forEach((id, i) => {
+                        const el = document.getElementById(id);
+                        if (el) setTimeout(() => el.classList.add('visible'), 350 + i * 60);
+                    });
+
+                    // Labels fade in
+                    ['lbl-nl', 'lbl-del'].forEach((id, i) => {
+                        const el = document.getElementById(id);
+                        if (el) setTimeout(() => { el.style.transition = 'opacity 0.5s'; el.style.opacity = '1'; }, 500 + i * 200);
+                    });
+                    // "creates & assigns" label fades in with the Jira node
+                    setTimeout(() => {
+                        const lbl = document.getElementById('lbl-ja');
+                        if (lbl) { lbl.style.transition = 'opacity 0.5s'; lbl.style.opacity = '1'; }
+                    }, 330);
+
+                    // Context bar slides in last
+                    setTimeout(() => {
+                        const bar = document.getElementById('context-bar-group');
+                        if (bar) bar.classList.add('visible');
+                    }, 1100);
+
+                    archObserver.disconnect();
+                });
+            }, { threshold: 0.2 });
+            archObserver.observe(archDiagram);
+        }
+
+        // ── Chat rows: animate one-by-one on scroll-enter ──
+        const chatContainer = document.getElementById('chat-container');
+        if (chatContainer) {
+            const chatObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    const rows = chatContainer.querySelectorAll('.chat-row');
+                    rows.forEach((row, i) => {
+                        setTimeout(() => row.classList.add('visible'), i * 200);
+                    });
+                    chatObserver.disconnect();
+                });
+            }, { threshold: 0.15 });
+            chatObserver.observe(chatContainer);
+        }
+    </script>
+</body>
+
+</html>
